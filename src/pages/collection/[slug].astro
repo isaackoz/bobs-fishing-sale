@@ -1,0 +1,66 @@
+---
+import type { Params } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import { getCollections, getItemsByCollection,getCollectionBySlug } from "../../utils/sanity";
+import SanityImage from '../../components/SanityImage.astro'
+import {DataTable} from '../../components/table/data-table'
+import {columns} from '../../components/table/columns'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+const { slug } = Astro.params as Params;
+
+export async function getStaticPaths() {
+  const collections = await getCollections();
+  return collections.map((collection) => ({
+    params: { slug: collection.slug.current },
+  }));
+}
+const collection = await getCollectionBySlug(slug!)
+const items = await getItemsByCollection(slug!);
+---
+
+<Layout title=`${slug}`>
+  <section class="max-w-7xl mx-auto pt-4">
+    <h1 class="text-5xl mx-auto text-center py-4">
+     {collection.name}
+    </h1>
+    <DataTable data={items} columns={columns} client:load/>
+    <!-- <Table className="bg-gray-400 rounded-lg">
+      <TableCaption>A list of items in this collection</TableCaption>
+      <TableHeader className="">
+        <TableRow>
+          <TableHead className="text-black font-bold w-64">Image</TableHead>
+          <TableHead className="text-black font-bold">REF-ID</TableHead>
+          <TableHead className="text-black font-bold w-48">Name</TableHead>
+          <TableHead className="text-black font-bold">Brand</TableHead>
+          <TableHead className="text-black font-bold"><span class="sr-only">Action</span></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {
+          items.map((item) => (
+            <TableRow>
+              <TableCell className="bg-white h-24 w-48 flex items-center justify-center m-2 rounded-md">
+                <SanityImage node={item.mainImage} width="192" className="object-contain h-24"/>
+              </TableCell>
+              <TableCell>{item.refId}</TableCell>
+              <TableCell className="">{item.name}</TableCell>
+              <TableCell className="">{item.brand}</TableCell>
+              <TableCell><a href={`/item/${item._id}`}><Button>View Details &rarr;</Button></a></TableCell>
+            </TableRow>
+          ))
+        }
+      </TableBody>
+
+      {items.map((item) => <div>{item.name}</div>)}
+   </Table> -->
+  </section>
+</Layout>
