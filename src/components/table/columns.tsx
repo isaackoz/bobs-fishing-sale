@@ -2,30 +2,47 @@
 
 import type { Item } from "@/utils/sanity";
 import { type ColumnDef } from "@tanstack/react-table";
-import SanityImage from "../SanityImage.astro";
+import { Button } from "../ui/button";
 
-export const columns: ColumnDef<Item>[] = [
+import { urlFor } from "@/utils/sanity-img-url";
+
+export const columns: ColumnDef<Item, any>[] = [
   {
-    accessorKey: "mainImage",
+    id: "coverImage",
     header: "Image",
     cell: ({ row }) => {
-      <SanityImage
-        node={row.getValue("mainImage")}
-        width="192"
-        className="object-contain h-24"
-      />;
+      return (
+        <span className="bg-white h-32 w-48 flex items-center justify-center rounded-md">
+          <img
+            src={urlFor(row.original.mainImage).width(200).url()}
+            className="h-32 object-contain"
+          />
+        </span>
+      );
     },
+    enableSorting: false,
   },
   {
     accessorKey: "refId",
-    header: "Email",
+    header: "Reference-ID",
   },
   {
     accessorKey: "name",
-    header: "Amount",
+    header: "Item Name",
+    enableSorting: true,
   },
   {
     accessorKey: "brand",
-    header: "Amount",
+    header: "Brand",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      return (
+        <a href={`/item/${row.original._id}`}>
+          <Button>Details</Button>
+        </a>
+      );
+    },
   },
 ];

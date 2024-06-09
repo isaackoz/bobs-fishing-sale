@@ -1,6 +1,7 @@
 import type { PortableTextBlock } from "@portabletext/types";
 import type { ImageUrlBuilder } from "sanity";
 import { sanityClient } from "sanity:client";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 export interface Rod {
   name: string;
@@ -32,7 +33,7 @@ export interface Item {
   info: PortableTextBlock[];
   _id: string;
   brand: string;
-  mainImage: ImageUrlBuilder;
+  mainImage: SanityImageSource;
 }
 
 export async function getItemsByCollection(
