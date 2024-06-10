@@ -76,3 +76,11 @@ export async function getItemById(id: string): Promise<DetailedItem> {
     }
   );
 }
+
+interface HomePage {
+  info: PortableTextBlock;
+}
+
+export async function getHomePage(): Promise<HomePage> {
+  return await sanityClient.fetch(`*[_type=="index"][0]`);
+}

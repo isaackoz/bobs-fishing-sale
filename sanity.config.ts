@@ -16,6 +16,9 @@ if (!projectId || !dataset) {
   );
 }
 
+const singletonActions = new Set(["publish", "discardChanges", "restore"]);
+const singletonTypes = new Set(["index"]);
+
 export default defineConfig({
   name: "default",
   title: "listings-astro",
@@ -23,9 +26,38 @@ export default defineConfig({
   projectId,
   dataset,
 
-  plugins: [structureTool(), visionTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Content")
+          .items([
+            // Our singleton type has a list item with a custom child
+            S.listItem().title("Home Page").id("index").child(
+              // Instead of rendering a list of documents, we render a single
+              // document, specifying the `documentId` manually to ensure
+              // that we're editing the single instance of the document
+              S.document().schemaType("index").documentId("index")
+            ),
+
+            // Regular document types
+            S.documentTypeListItem("brands").title("Brands"),
+            S.documentTypeListItem("collections").title("Collection"),
+            S.documentTypeListItem("items").title("Items"),
+          ]),
+    }),
+    visionTool(),
+  ],
 
   schema: {
     types: schemaTypes,
+    templates: (templates) =>
+      templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
+  },
+  document: {
+    actions: (input, context) =>
+      singletonTypes.has(context.schemaType)
+        ? input.filter(({ action }) => action && singletonActions.has(action))
+        : input,
   },
 });

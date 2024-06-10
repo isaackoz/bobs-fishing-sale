@@ -1,10 +1,11 @@
 ---
+import { PortableText } from 'astro-portabletext';
 import Layout from '../layouts/Layout.astro'
-import { getCollections } from '../utils/sanity'
+import { getCollections, getHomePage } from '../utils/sanity'
 import {Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription} from '@/components/ui/card'
 
 const collections = await getCollections()
-console.log(collections)
+const homePage = await getHomePage();
 
 
 ---
@@ -15,7 +16,7 @@ console.log(collections)
 			Categories
 		</h2>
 		<div class="w-full min-h-32 rounded-lg mt-2 flex space-x-2">
-			{collections.map((collection)=> (
+			{collections?.map((collection)=> (
 				<a href={`/collection/${collection.slug.current}`} data-astro-prefetch="tap">
 					<Card className='w-64'>
 						<CardHeader>
@@ -31,10 +32,6 @@ console.log(collections)
 			))}
 		</div>
 		<h2 class="text-2xl font-semibold">Info</h2>
-		<p>
-			On the behalf of Bob, we are selling all of his fishing gear. Bob has since retired from fishing.
-			<br/>
-			For any info please contact us at ***@gmail.com
-		</p>
+		<PortableText value={homePage.info}/>
 	</section>
 </Layout>
