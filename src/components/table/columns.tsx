@@ -13,10 +13,12 @@ export const columns: ColumnDef<Item, any>[] = [
     cell: ({ row }) => {
       return (
         <span className="bg-white h-32 w-48 flex items-center justify-center rounded-md">
-          <img
-            src={urlFor(row.original.mainImage).width(200).url()}
-            className="h-32 object-contain"
-          />
+          {row.original?.mainImage && (
+            <img
+              src={urlFor(row.original.mainImage).width(200).url()}
+              className="h-32 object-contain"
+            />
+          )}
         </span>
       );
     },
@@ -30,6 +32,9 @@ export const columns: ColumnDef<Item, any>[] = [
     accessorKey: "name",
     header: "Item Name",
     enableSorting: true,
+    cell: ({ cell }) => {
+      return <span className="line-clamp-6">{cell.getValue()}</span>;
+    },
   },
   {
     accessorKey: "brand",

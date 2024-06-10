@@ -3,22 +3,12 @@ import type { ImageUrlBuilder } from "sanity";
 import { sanityClient } from "sanity:client";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
-export interface Rod {
-  name: string;
-}
-
 export interface Collection {
   name?: string;
   description?: string;
   slug: {
     current: string;
   };
-}
-
-export async function getRods(): Promise<Rod[]> {
-  return await sanityClient.fetch(
-    `*[_type=="fishingRod"] | order(publishedAt desc)`
-  );
 }
 
 export async function getCollections(): Promise<Collection[]> {
@@ -30,10 +20,10 @@ export async function getCollections(): Promise<Collection[]> {
 export interface Item {
   refId: string;
   name: string;
-  info: PortableTextBlock[];
+  info?: PortableTextBlock[];
   _id: string;
-  brand: string;
-  mainImage: SanityImageSource;
+  brand?: string;
+  mainImage?: SanityImageSource;
 }
 
 export async function getItemsByCollection(
@@ -58,6 +48,31 @@ export async function getCollectionBySlug(
     `*[_type=="collections" && slug.current==$collectionSlug]{name, description}[0]`,
     {
       collectionSlug,
+    }
+  );
+}
+
+export async function getAllItems(): Promise<Item[]> {
+  return await sanityClient.fetch(`*[_type=="items"]{_id}`);
+}
+
+export interface DetailedItem {
+  _id: string;
+  name: string;
+  brand: string;
+  mainImage: SanityImageSource;
+  refId: string;
+  info: PortableTextBlock[];
+  updated: string;
+  created: string;
+  otherImages: SanityImageSource[];
+}
+
+export async function getItemById(id: string): Promise<DetailedItem> {
+  return await sanityClient.fetch(
+    `*[_type=="items" && _id==$id]{_id, name, "brand":brand->name, mainImage, refId, info, "updated":_updatedAt, "created":_createdAt, otherImages}[0]`,
+    {
+      id,
     }
   );
 }

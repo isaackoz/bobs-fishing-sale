@@ -1,7 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { customAlphabet } from "nanoid";
-
-const nanoId = customAlphabet("1234567890ABCDEFGHJKLMNPQRSTUVWXYZ", 6);
+import { RefIDInput } from "./RefIDInput";
 
 export default defineType({
   name: "items",
@@ -16,9 +14,9 @@ export default defineType({
     {
       name: "refId",
       title: "Reference ID",
+      components: { input: RefIDInput },
       type: "string",
       readOnly: true,
-      initialValue: nanoId(6),
     },
     {
       name: "mainImage",

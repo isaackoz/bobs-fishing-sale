@@ -23,6 +23,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import React from "react";
@@ -31,6 +32,12 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
 
+const searchMap = new Map<string, string>([
+  ["name", "Name"],
+  ["brand", "Brand"],
+  ["refId", "Reference ID"],
+]);
+
 export function DataTable<TData, TValue>({
   data,
   columns,
@@ -38,6 +45,8 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
+  const [searchBy, setSearchBy] = React.useState<string>("name");
 
   const table = useReactTable({
     data,
@@ -59,22 +68,27 @@ export function DataTable<TData, TValue>({
   return (
     <div className="rounded-md border">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
         <DropdownMenu>
-          <DropdownMenuTrigger>Search by...</DropdownMenuTrigger>
+          <DropdownMenuTrigger className="mr-2">
+            <Button>Search by: {searchMap.get(searchBy)}</Button>
+          </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>1</DropdownMenuItem>
-            <DropdownMenuItem>2</DropdownMenuItem>
-            <DropdownMenuItem>3</DropdownMenuItem>
+            <DropdownMenuLabel>Search by...</DropdownMenuLabel>
+            {Array.from(searchMap.entries()).map(([key, label]) => (
+              <DropdownMenuItem key={key} onClick={() => setSearchBy(key)}>
+                {label}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Input
+          placeholder={`Filter by ${searchMap.get(searchBy)}...`}
+          value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn(searchBy)?.setFilterValue(event.target.value)
+          }
+          className="max-w-xs"
+        />
       </div>
       <Table className="bg-slate-300">
         <TableHeader className=" ">
@@ -107,7 +121,7 @@ export function DataTable<TData, TValue>({
                 className="bg-slate-300 hover:bg-slate-400/50"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
