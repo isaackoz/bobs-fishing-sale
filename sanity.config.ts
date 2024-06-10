@@ -1,5 +1,5 @@
 import { defineConfig } from "sanity";
-import { structureTool } from "sanity/structure";
+import { structureTool, type StructureBuilder } from "sanity/structure";
 import { schemaTypes } from "./schema";
 import { visionTool } from "@sanity/vision";
 
@@ -17,7 +17,17 @@ if (!projectId || !dataset) {
 }
 
 const singletonActions = new Set(["publish", "discardChanges", "restore"]);
-const singletonTypes = new Set(["index"]);
+const singletonTypes = new Set(["index", "actions"]);
+
+const singletonListItem = (
+  S: StructureBuilder,
+  typeName: string,
+  title?: string
+) =>
+  S.listItem()
+    .title(title || typeName)
+    .id(typeName)
+    .child(S.document().schemaType(typeName).documentId(typeName));
 
 export default defineConfig({
   name: "default",
@@ -38,6 +48,12 @@ export default defineConfig({
               // document, specifying the `documentId` manually to ensure
               // that we're editing the single instance of the document
               S.document().schemaType("index").documentId("index")
+            ),
+            S.listItem().title("Actions").id("actions").child(
+              // Instead of rendering a list of documents, we render a single
+              // document, specifying the `documentId` manually to ensure
+              // that we're editing the single instance of the document
+              S.document().schemaType("actions").documentId("actions")
             ),
 
             // Regular document types
